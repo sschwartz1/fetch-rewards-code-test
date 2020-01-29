@@ -28,11 +28,9 @@ class SimilarityScorer:
         text_1_list = self.text_1.strip().split()
         self.length_1 = len(text_1_list)
         for index, word in enumerate(text_1_list):
-            clean_word = self.strip_punc(word)
+            clean_word = self._strip_punc(word)
             if clean_word in self.word_dict_1.keys():
-                current_index = self.word_dict_1[clean_word]
-                current_index.append(index)
-                self.word_dict_1[clean_word] = current_index
+                self.word_dict_1[clean_word].append(index)
             else:
                 self.word_dict_1[clean_word] = [index]
         
@@ -40,16 +38,14 @@ class SimilarityScorer:
         text_2_list = self.text_2.strip().split()
         self.length_2 = len(text_2_list)
         for index, word in enumerate(text_2_list):
-            clean_word = self.strip_punc(word)
+            clean_word = self._strip_punc(word)
             if clean_word in self.word_dict_2.keys():
-                current_index = self.word_dict_2[clean_word]
-                current_index.append(index)
-                self.word_dict_2[clean_word] = current_index
+                self.word_dict_2[clean_word].append(index)
             else:
                 self.word_dict_2[clean_word] = [index]
 
 
-    def strip_punc(self, input_word):
+    def _strip_punc(self, input_word):
         """ Utility function to strip punctation and convert words to lower case
             Input: word from text
             Return: lowercase and stripped punctiation word """
@@ -76,12 +72,12 @@ class SimilarityScorer:
         # Scores each set of common words between 2 texts
         for key, item in longer_text.items():
             if key in shorter_text.keys():
-                current_score += self.__score_text(item, shorter_text[key], longer_length)
+                current_score += self._score_text(item, shorter_text[key], longer_length)
 
         return current_score / longer_length
         
 
-    def __score_text(self, values1, values2, longer_length):
+    def _score_text(self, values1, values2, longer_length):
         """ Scores each common word appearing in each text, calls score_words to create similiarity index for same words in different positions
             Inputs: values1 and values2 -> List of positions where commond word appears in each text
                     longer_length -> Overall word count of longer text
@@ -107,14 +103,14 @@ class SimilarityScorer:
 
         # Common words not in same spot within text, will be assgined similarity index between 0 to 1 (exclusive)
         if length1 >= length2:
-            score += self.__score_words(diff_list2, diff_list1, longer_length)
+            score += self._assign_similarity_index(diff_list2, diff_list1, longer_length)
         else:
-            score += self.__score_words(diff_list1, diff_list2, longer_length)
+            score += self._assign_similarity_index(diff_list1, diff_list2, longer_length)
 
         return score
 
 
-    def __score_words(self, short_list, long_list, overall_length):
+    def _assign_similarity_index(self, short_list, long_list, overall_length):
         """ Assigns a similiarity index to words that appear in both texts, but not in exact same spot
             Input: short_list -> list of given word positions in text with less occurances of given word
                    long_list -> list of given word positions in text with more occcurances of given word
