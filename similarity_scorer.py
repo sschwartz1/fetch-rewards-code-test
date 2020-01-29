@@ -1,7 +1,5 @@
 from string import punctuation
-import itertools
 import math
-import sys
 
 class SimilarityScorer:
     """ Class for comparing and scoring 2 different texts
